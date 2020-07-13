@@ -116,8 +116,7 @@ jobs:
        run: |
         bash
         TEST_VAR=`date +%Y%H%M%S`
-        aws s3 cp ./contribution/checkstyle-tester/repositories s3://${{ env.AWS_BUCKET_NAME }}/${{needs.parse_body.outputs.branch}}_$TEST_VAR/repositories/ --recursive
-        aws s3 cp ./contribution/checkstyle-tester/reports s3://${{ env.AWS_BUCKET_NAME }}/${{needs.parse_body.outputs.branch}}_$TEST_VAR/reports/ --recursive
+        aws s3 cp ./contribution/checkstyle-tester/reports/diff/ s3://${{ env.AWS_BUCKET_NAME }}/${{needs.parse_body.outputs.branch}}_$TEST_VAR/reports/diff/ --recursive
         echo https://${{env.AWS_BUCKET_NAME}}.s3.${{env.AWS_REGION}}.amazonaws.com/${{needs.parse_body.outputs.branch}}_$TEST_VAR/reports/diff/index.html > message
         
      - name: Set output
