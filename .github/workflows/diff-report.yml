@@ -1,4 +1,5 @@
 name: Diff-Report
+#for tests
 env:
   AWS_REGION: us-east-2
   AWS_BUCKET_NAME: "checkstyle-diff-reports"
