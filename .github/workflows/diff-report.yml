@@ -115,10 +115,13 @@ jobs:
          
      - name: Generate report
        run: |
+         bash
+         DIR = "../../checkstyle"
+         REF="origin/${{needs.parse_body.outputs.branch}}"
          cd contribution/checkstyle-tester
          sudo apt-get install mercurial
          sudo apt install groovy
-         groovy diff.groovy -r ../../checkstyle -b master -p origin/${{needs.parse_body.outputs.branch}} -c config.xml -l proj.properties
+         groovy diff.groovy -r $DIR -b master -p $REF -c config.xml -l proj.properties
         
      - name: Configure AWS Credentials
        uses: aws-actions/configure-aws-credentials@v1
@@ -130,9 +133,12 @@ jobs:
      - name: Copy Report to AWS S3 Bucket
        run: |
         bash
-        TEST_VAR=`date +%Y%H%M%S`
-        aws s3 cp ./contribution/checkstyle-tester/reports/diff/ s3://${{ env.AWS_BUCKET_NAME }}/${{needs.parse_body.outputs.branch}}_$TEST_VAR/reports/diff/ --recursive
-        echo https://${{env.AWS_BUCKET_NAME}}.s3.${{env.AWS_REGION}}.amazonaws.com/${{needs.parse_body.outputs.branch}}_$TEST_VAR/reports/diff/index.html > message
+        TIME=`date +%Y%H%M%S`
+        FOLDER="${{needs.parse_body.outputs.branch}}_$TIME"
+        DIFF="./contribution/checkstyle-tester/reports/diff/"
+        LINK="https://${{env.AWS_BUCKET_NAME}}.s3.${{env.AWS_REGION}}.amazonaws.com"
+        aws s3 cp $DIFF s3://${{env.AWS_BUCKET_NAME}}/$FOLDER/reports/diff/ --recursive
+        echo $LINK/$FOLDER/reports/diff/index.html > message
         
      - name: Set output
        id: out
