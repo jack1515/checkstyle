@@ -1,5 +1,5 @@
 #------------------------------------------------------------------------------------
-# Github Action to generate Chekstyle report.
+# Github Action to generate Checkstyle report.
 # 
 # Workflow starts when:
 # 1) pull request  - opened, reopened, synchronized, edited
@@ -23,8 +23,9 @@ on:
     types: [created]
 
 jobs:
+# Parse PR Body, search pro, xml links  
   parse_body:
-    if: (github.event_name == 'pull_request') || (github.event_name == 'issue_comment' && github.event.comment.body == 'report')
+    if: github.event_name == 'pull_request' || github.event.comment.body == 'report'
     runs-on: ubuntu-latest
     outputs:
       proj_link: ${{ steps.parse.outputs.proj_link }}
