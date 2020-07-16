@@ -64,7 +64,7 @@ jobs:
        
      - name: Download files
        run: |
-        echo "${{toJson(jobs)}}"
+        echo "${{toJson(github)}}"
         wget -q "${{needs.parse_body.outputs.project_link}}" -O project.properties
         wget -q "${{needs.parse_body.outputs.config_link}}" -O config.xml
         
