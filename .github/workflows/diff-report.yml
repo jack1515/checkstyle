@@ -143,11 +143,6 @@ jobs:
          jq '.jobs' info.json
          jq '.jobs' info.json > jobs
          jq '.[] | select(.conclusion == "failure") | .html_url' jobs
-         jq '.[] | select(.conclusion == "failure") | .html_url' jobs > link
-         jq 'map(select(.conslusion == "failure") | .steps) | .[]' jobs
-         jq 'map(select(.conslusion == "failure") | .steps) | .[]' jobs > steps
-         jq 'map(select(.conclusion == "failure")  | .name) | .[]' steps
-         jq 'map(select(.conclusion == "failure")  | .name) | .[]' steps > name
-         cat link
-         cat steps
-         cat name
+         jq '.[] | select(.conclusion == "failure") | .name' jobs
+         jq '.[] | select(.conclusion == "failure") | .steps' jobs > steps
+         jq '.[] | select(.conclusion == "failure") | .name' steps
