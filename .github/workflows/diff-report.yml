@@ -60,6 +60,8 @@ jobs:
     runs-on: ubuntu-latest
     needs: parse_body
     if: needs.parse_body.outputs.project_link != '' && needs.parse_body.outputs.config_link != ''
+    outputs:
+      message: ${{ steps.out.outputs.message}}
     steps: 
        
      - name: Download files
@@ -120,29 +122,36 @@ jobs:
         echo $LINK/$FOLDER/reports/diff/index.html > message
         
      - name: Set output
+       if: always()
        id: out
-       run: echo ::set-output name=message::$(cat message)   
-      
-     - name: Comment PR
-       uses: ./contribution/comment-action/
-       with:
-        message: ${{steps.out.outputs.message}}
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+       run: |
+        cat "" >> message
+        echo ::set-output name=message::$(cat message)   
   
   last_job:
     runs-on: ubuntu-latest
     needs: [parse_body, make_report]
     if: always()
     steps:
-      - name: Test step
+      - name: Success message
+        if: needs.make_report.outputs.message != ''
+        run: |
+          echo "${{needs.make_report.outputs.message}}" > message
+      
+      - name: Failure message
+        if: needs.make_report.outputs.message == ''
         run: |
          bash
-         echo "${{github.run_id}}"
          wget -q https://api.github.com/repos/jack1515/checkstyle/actions/runs/${{github.run_id}}/jobs -O info.json
-         sudo apt-get install jq
-         jq '.jobs' info.json
          jq '.jobs' info.json > jobs
-         jq '.[] | select(.conclusion == "failure") | .html_url' jobs
-         jq '.[] | select(.conclusion == "failure") | .name' jobs
+         jq '.[] | select(.conclusion == "failure") | .html_url' jobs > link
+         jq '.[] | select(.conclusion == "failure") | .name' jobs > job_name
          jq '.[] | select(.conclusion == "failure") | .steps' jobs > steps
-         jq '.[] | select(.conclusion == "failure") | .name' steps
+         jq '.[] | select(.conclusion == "failure") | .name' steps > step_name
+         echo "Failure during $(cat job_name)/$(cat step_name): $(cat link)" > message
+         
+      - name: Comment PR
+        uses: ./contribution/comment-action/
+        with:
+         message: $(cat message)
+         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}   
