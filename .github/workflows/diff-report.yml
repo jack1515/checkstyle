@@ -149,7 +149,11 @@ jobs:
          jq '.[] | select(.conclusion == "failure") | .steps' jobs > steps
          jq '.[] | select(.conclusion == "failure") | .name' steps > step_name
          echo "Failure during $(cat job_name)/$(cat step_name): $(cat link)" > message
-      
+     
+      - name: Set message
+        id: out
+        run: echo ::set-output name=message::$(cat message)
+     
       - name: Check contribution existence
         id: check
         run: |
@@ -171,5 +175,5 @@ jobs:
       - name: Comment PR
         uses: ./contribution/comment-action/
         with:
-         message: ${{cat message}}
+         message: ${{steps.out.outputs.message}}
          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}   
