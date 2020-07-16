@@ -161,7 +161,7 @@ jobs:
         run: echo "${{steps.check.outputs.result}}"   
          
       - name: Download contribution
-        if: ${{steps.check.outputs.result == false}}
+        if: steps.check.outputs.result == 'false'
         uses: actions/checkout@v2
         with:
          repository: checkstyle/contribution
