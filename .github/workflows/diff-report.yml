@@ -171,5 +171,5 @@ jobs:
       - name: Comment PR
         uses: ./contribution/comment-action/
         with:
-         message: $(cat message)
+         message: "$(cat message)"
          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}   
