@@ -125,7 +125,7 @@ jobs:
        if: always()
        id: out
        run: |
-        cat "" >> message
+        echo "" >> message
         echo ::set-output name=message::$(cat message)   
   
   last_job:
@@ -149,7 +149,21 @@ jobs:
          jq '.[] | select(.conclusion == "failure") | .steps' jobs > steps
          jq '.[] | select(.conclusion == "failure") | .name' steps > step_name
          echo "Failure during $(cat job_name)/$(cat step_name): $(cat link)" > message
-         
+      
+      - name: Check contribution existence
+        id: check
+        run: |
+          ((test -d contribution && echo "true") || echo "false") > result
+          echo ::set-output name=result::$(cat result)
+          
+      - name: Download contribution
+        if: steps.check.outputs.result == "false"
+        uses: actions/checkout@v2
+        with:
+         repository: checkstyle/contribution
+         ref: master
+         path: contribution    
+      
       - name: Comment PR
         uses: ./contribution/comment-action/
         with:
