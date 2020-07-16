@@ -53,7 +53,7 @@ jobs:
      - name: Set branch and head_label
        id: branch
        run: |
-        echo ::set-output name=user::$(cat user)
+        echo ::set-output name=user::$(cat users) #should be user
         echo ::set-output name=ref::$(cat branch)
      
   make_report:
@@ -107,7 +107,7 @@ jobs:
          REPO="../../checkstyle"
          cd contribution/checkstyle-tester
          sudo apt install groovy
-         groovy diff.groovy -r $REPO -b master -p $REF -c config.xml -l project.properties
+         groov diff.groovy -r $REPO -b master -p $REF -c config.xml -l project.properties #should be groovy
        
      - name: Copy Report to AWS S3 Bucket
        run: |
