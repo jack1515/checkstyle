@@ -142,13 +142,14 @@ jobs:
         if: needs.make_report.outputs.message == ''
         run: |
          bash
+         LINK = "https://github.com/jack1515/checkstyle/actions/runs/${{github.run_id}}"
          wget -q https://api.github.com/repos/jack1515/checkstyle/actions/runs/${{github.run_id}}/jobs -O info.json
          jq '.jobs' info.json > jobs
          jq '.[] | select(.conclusion == "failure") | .html_url' jobs > link
          jq '.[] | select(.conclusion == "failure") | .name' jobs > job_name
          jq '.[] | select(.conclusion == "failure") | .steps' jobs > steps
          jq '.[] | select(.conclusion == "failure") | .name' steps > step_name
-         echo "Failure during $(cat job_name)/$(cat step_name): $(cat link)" > message
+         echo "Failure during $(cat job_name)/$(cat step_name): $LINK" > message
      
       - name: Set message
         id: out
