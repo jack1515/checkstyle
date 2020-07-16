@@ -153,11 +153,15 @@ jobs:
       - name: Check contribution existence
         id: check
         run: |
-          ((test -d contribution && echo "is_here") || echo "not_here") > result
+          ((test -d contribution && echo "true") || echo "false") > result
           echo ::set-output name=result::$(cat result)
           
+          
+      - name: check outputs contribution
+        run: echo "${{steps.check.outputs.result}}"   
+         
       - name: Download contribution
-        if: steps.check.outputs.result == "not here"
+        if: ${{steps.check.outputs.result == "false"}}
         uses: actions/checkout@v2
         with:
          repository: checkstyle/contribution
