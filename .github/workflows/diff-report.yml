@@ -142,7 +142,9 @@ jobs:
          echo "${{toJson(github.jobs)}}"
          wget -q https://api.github.com/repos/jack1515/checkstyle/actions/runs/${{github.run_id}}/jobs -O info.json
          jq '.jobs' info.json > jobs
-         jq 'map(select(.conslusion == "failure") | .html_url) | .[0]' jobs > link
-         jq 'map(select(.steps[].conclusion == "failure") | .steps[].name) | .[0]' jobs > name
+         jq 'map(select(.conslusion == "failure") | .html_url) | .[]' jobs > link
+         jq 'map(select(.conslusion == "failure") | .steps) | .[]' jobs > steps
+         jq 'map(select(.conclusion == "failure")  | .name) | .[]' steps > name
          cat link
+         cat steps
          cat name
