@@ -93,6 +93,13 @@ jobs:
          mv config.xml ./contribution/checkstyle-tester/
          mv project.properties ./contribution/checkstyle-tester/
          
+     - name: Configure AWS Credentials
+       uses: aws-actions/configure-aws-credentials@v1
+       with:
+        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        aws-region: ${{ env.AWS_REGION }}         
+         
      - name: Generate report
        run: |
          bash
@@ -101,13 +108,6 @@ jobs:
          cd contribution/checkstyle-tester
          sudo apt install groovy
          groovy diff.groovy -r $REPO -b master -p $REF -c config.xml -l project.properties
-        
-     - name: Configure AWS Credentials
-       uses: aws-actions/configure-aws-credentials@v1
-       with:
-        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-        aws-region: ${{ env.AWS_REGION }}
        
      - name: Copy Report to AWS S3 Bucket
        run: |
