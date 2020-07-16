@@ -149,7 +149,7 @@ jobs:
          jq '.[] | select(.conclusion == "failure") | .name' jobs > job_name
          jq '.[] | select(.conclusion == "failure") | .steps' jobs > steps
          jq '.[] | select(.conclusion == "failure") | .name' steps > step_name
-         echo "Failure during $(cat job_name)/$(cat step_name): $LINK" > message
+         echo "Failure during $(cat job_name)/$(cat step_name): "$LINK > message
      
       - name: Set message
         id: out
