@@ -136,8 +136,10 @@ jobs:
     steps:
       - name: Test step
         run: |
+         bash
          echo "${{github.run_id}}"
          echo "${{github.run_number}}"
          echo "${{toJson(github.jobs)}}"
          wget -q https://api.github.com/repos/jack1515/checkstyle/actions/runs/${{github.run_id}}/jobs -O info.json
-         jq .jobs info.json
+         jq '.jobs info.json | {result: .conclusion, link: .url, steps: .steps}' > jobs
+         cat jobs
