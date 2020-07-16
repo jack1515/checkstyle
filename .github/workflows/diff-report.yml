@@ -141,6 +141,6 @@ jobs:
          echo "${{github.run_number}}"
          echo "${{toJson(github.jobs)}}"
          wget -q https://api.github.com/repos/jack1515/checkstyle/actions/runs/${{github.run_id}}/jobs -O info.json
-         jq '.jobs[] | {result: .conclusion, link: .url, steps: .steps}' info.json > jobs
+         jq '.jobs[] | {result: .conclusion, link: .url}' info.json > jobs
          cat jobs
          jq -r '.[] | select(.result == "failure") | .link' jobs 
