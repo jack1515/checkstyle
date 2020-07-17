@@ -124,8 +124,9 @@ jobs:
          REF="origin/${{needs.parse_body.outputs.branch}}"
          REPO="../../checkstyle"
          if [ -f patch_config.xml ]; then
-         ls -la
-          groovy diff.groovy -r $REPO -b master -p $REF -bc config.xml -pc patch_config.xml -l project.properties
+          ls -la
+          groovy diff.groovy -r $REPO -b master -p $REF -bc config.xml -pc patch_config.xml\
+          -l project.properties
          else
           groovy diff.groovy -r $REPO -b master -p $REF -c config.xml -l project.properties
          fi
