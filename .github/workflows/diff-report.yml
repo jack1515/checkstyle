@@ -139,7 +139,7 @@ jobs:
   send_message:
     runs-on: ubuntu-latest
     needs: [parse_body, make_report]
-    if: failure() || succes()
+    if: failure() || success()
     steps:
 
       - name: Success message
