@@ -152,15 +152,15 @@ jobs:
         run: |
          bash
          JOBS_LINK="https://github.com/jack1515/checkstyle/actions/runs/${{github.run_id}}"
-         echo $JOBS_LINK
-         wget "${JOBS_LINK}/jobs"
-         ls -la
- #        jq '.jobs' info.json > jobs
- #        jq '.[] | select(.conclusion == "failure") | .name' jobs > job_name
- #        jq '.[] | select(.conclusion == "failure") | .steps' jobs > steps
- #        jq '.[] | select(.conclusion == "failure") | .name' steps > step_name
- #        echo "Report generation job failed on phase $(cat job_name), \
-#          step $(cat step_name).<br>Link: $JOBS_LINK" > message
+         API_LINK="https://api.github.com/repos/jack1515/checkstyle/actions/runs/\
+         ${{github.run_id}}/jobs"
+         wget $API_LINK -O info.json
+         jq '.jobs' info.json > jobs
+         jq '.[] | select(.conclusion == "failure") | .name' jobs > job_name
+         jq '.[] | select(.conclusion == "failure") | .steps' jobs > steps
+         jq '.[] | select(.conclusion == "failure") | .name' steps > step_name
+         echo "Report generation job failed on phase $(cat job_name), \
+         step $(cat step_name).<br>Link: $JOBS_LINK" > message
      
       - name: Set message
         id: out
