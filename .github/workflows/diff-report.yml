@@ -148,8 +148,9 @@ jobs:
          jq '.[] | select(.conclusion == "failure") | .name' jobs > job_name
          jq '.[] | select(.conclusion == "failure") | .steps' jobs > steps
          jq '.[] | select(.conclusion == "failure") | .name' steps > step_name
-         echo -e "Report generation job failed on phase $(cat job_name), step $(cat step_name).\n\
-         Link: $(cat link)" > message
+         echo -e "Report generation job failed on phase $(cat job_name), \
+         step $(cat step_name)." > message
+         echo "Link: $(cat link)" >> message
 #         echo "Failure during $(cat job_name)/$(cat step_name): $(cat LINK)" > message
      
       - name: Set message
