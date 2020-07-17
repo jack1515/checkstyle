@@ -110,7 +110,7 @@ jobs:
          bash
          REF="origin/${{needs.parse_body.outputs.branch}}"
          REPO="../../checkstyle"
-         groovy diff.groovy -r $REPO -b master -p $REF -c config.xml -l project.properties
+         groov diff.groovy -r $REPO -b master -p $REF -c config.xml -l project.properties
          
      - name: Generate basic single report
        if: github.event.comment.body == 'single report'
@@ -135,20 +135,21 @@ jobs:
        id: out
        run: echo ::set-output name=message::$(cat message)   
   
-  #should be always last step
+  # should be always last step
   send_message:
     runs-on: ubuntu-latest
     needs: [parse_body, make_report]
     if: failure() || success()
     steps:
-
+          
+      
       - name: Success message
-        if: needs.make_report.outputs.message != ''
+        if: success()
         run: echo "${{needs.make_report.outputs.message}}" > message
       
       #in link change repo owner
       - name: Failure message
-        if: needs.make_report.outputs.message == ''
+        if: failure()
         run: |
          bash
          JOBS_LINK="https://github.com/jack1515/checkstyle/actions/runs/${{github.run_id}}"
