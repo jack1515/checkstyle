@@ -43,7 +43,7 @@ jobs:
      - name: Parsing content of PR description
        id: parse
        run: |
-        grep "^Diff Regression projects:" text > temp #|| echo "" > temp
+        grep "^Diff Regression projects:" text > temp || echo "" > temp
         sed 's/Diff Regression projects: //' temp > project
         echo ::set-output name=project_link::$(cat project)
         grep "^Diff Regression config:" text > temp || echo "" > temp
