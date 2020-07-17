@@ -22,7 +22,8 @@ on:
 jobs:
 # Parse PR Body, search for links to .properties and .xml files
   parse_body:
-    if: github.event.comment.body == 'report'
+    if: github.event.comment.body == 'diff report' ||
+        github.event.comment.body == 'single report'
     runs-on: ubuntu-latest
     outputs:
       project_link: ${{ steps.parse.outputs.project_link }}
@@ -32,15 +33,14 @@ jobs:
       
     steps:
     
-     - name: Parsing issue comment
-       if: github.event_name == 'issue_comment'
+     - name: Parsing PR description
        run: |
         echo "${{github.event.issue.body}}" > text
         echo "${{github.event.issue.user.login}}" > user
         wget -q "${{github.event.issue.pull_request.url}}" -O info.json
         jq .head.ref info.json > branch
         
-     - name: Parsing content of PR comment/description
+     - name: Parsing content of PR description
        id: parse
        run: |
         grep "^Diff Regression projects:" text > temp || echo "" > temp
@@ -50,7 +50,7 @@ jobs:
         sed 's/Diff Regression config: //' temp > config
         echo ::set-output name=config_link::$(cat config)
         
-     - name: Set branch and head_label
+     - name: Set branch and username
        id: branch
        run: |
         echo ::set-output name=user::$(cat user)
@@ -102,15 +102,24 @@ jobs:
         aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
         aws-region: ${{ env.AWS_REGION }}         
          
-     - name: Generate report
+     - name: Generate basic difference report
+       if: github.event.comment.body == 'diff report'
        run: |
+         cd contribution/checkstyle-tester
          bash
          REF="origin/${{needs.parse_body.outputs.branch}}"
          REPO="../../checkstyle"
+         groovy diff.groovy -r $REPO -b master -p $REF -c config.xml -l project.properties
+         
+     - name: Generate basic single report
+       if: github.event.comment.body == 'single report'
+       run: |
          cd contribution/checkstyle-tester
-         sudo apt install groovy
-         groov diff.groovy -r $REPO -b master -p $REF -c config.xml -l project.properties #should be groovy
-       
+         bash
+         REF="origin/${{needs.parse_body.outputs.branch}}"
+         REPO="../../checkstyle"
+         groovy diff.groovy -r $REPO -p $REF -pc config.xml -l project.properties -m single       
+    
      - name: Copy Report to AWS S3 Bucket
        run: |
         bash
@@ -124,45 +133,36 @@ jobs:
      - name: Set output
        if: always()
        id: out
-       run: |
-        echo "" >> message
-        echo ::set-output name=message::$(cat message)   
+       run: echo ::set-output name=message::$(cat message)   
   
-  last_job:
+  #should be always last step
+  send_message:
     runs-on: ubuntu-latest
     needs: [parse_body, make_report]
-    if: always()
+    if: failure() || succes()
     steps:
+
       - name: Success message
         if: needs.make_report.outputs.message != ''
-        run: |
-          echo "${{needs.make_report.outputs.message}}" > message
+        run: echo "${{needs.make_report.outputs.message}}" > message
       
+      #in link change repo owner
       - name: Failure message
         if: needs.make_report.outputs.message == ''
         run: |
-         echo "https://github.com/jack1515/checkstyle/actions/runs/${{github.run_id}}" > link
-         wget -q https://api.github.com/repos/jack1515/checkstyle/actions/runs/${{github.run_id}}/jobs -O info.json
+         bash
+         LINK = "https://github.com/jack1515/checkstyle/actions/runs/${{github.run_id}}"
+         wget -q $LINK/jobs -O info.json
          jq '.jobs' info.json > jobs
-         jq '.[] | select(.conclusion == "failure") | .html_url' jobs
          jq '.[] | select(.conclusion == "failure") | .name' jobs > job_name
          jq '.[] | select(.conclusion == "failure") | .steps' jobs > steps
          jq '.[] | select(.conclusion == "failure") | .name' steps > step_name
-         echo -e "Report generation job failed on phase $(cat job_name), \
-         step $(cat step_name).<br>Link: $(cat link)" > message
+         echo -e Report generation job failed on phase $(cat job_name), \
+         step $(cat step_name).<br>Link: $LINK > message
      
       - name: Set message
         id: out
-        run: |
-         cat message
-         echo ::set-output name=message::$(cat message)  
-         
-#      - name: Download contribution
-#        uses: actions/checkout@v2
-#        with:
-#         repository: checkstyle/contribution
-#         ref: master
-#         path: contribution    
+        run: echo ::set-output name=message::$(cat message)   
       
       - name: Comment PR
         uses: checkstyle/contribution/comment-action@master
