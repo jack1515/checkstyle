@@ -149,36 +149,23 @@ jobs:
          jq '.[] | select(.conclusion == "failure") | .steps' jobs > steps
          jq '.[] | select(.conclusion == "failure") | .name' steps > step_name
          echo -e "Report generation job failed on phase $(cat job_name), \
-         step $(cat step_name)." > message
-         echo "Link: $(cat link)" >> message
-#         echo "Failure during $(cat job_name)/$(cat step_name): $(cat LINK)" > message
+         step $(cat step_name).<br>Link: $(cat link)" > message
      
       - name: Set message
         id: out
         run: |
          cat message
-         echo ::set-output name=message::$(cat message)
-     
-      - name: Check contribution existence
-        id: check
-        run: |
-          ((test -d contribution && echo "true") || echo "false") > result
-          echo ::set-output name=result::$(cat result)
-          
-          
-      - name: check outputs contribution
-        run: echo "${{steps.check.outputs.result}}"   
+         echo ::set-output name=message::$(cat message)  
          
-      - name: Download contribution
-        if: steps.check.outputs.result == 'false'
-        uses: actions/checkout@v2
-        with:
-         repository: checkstyle/contribution
-         ref: master
-         path: contribution    
+#      - name: Download contribution
+#        uses: actions/checkout@v2
+#        with:
+#         repository: checkstyle/contribution
+#         ref: master
+#         path: contribution    
       
       - name: Comment PR
-        uses: ./contribution/comment-action/
+        uses: checkstyle/contribution/comment-action@master
         with:
          message: ${{steps.out.outputs.message}}
          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}   
