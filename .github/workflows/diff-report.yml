@@ -110,7 +110,7 @@ jobs:
          bash
          REF="origin/${{needs.parse_body.outputs.branch}}"
          REPO="../../checkstyle"
-         groov diff.groovy -r $REPO -b master -p $REF -c config.xml -l project.properties
+         groovy diff.groovy -r $REPO -b master -p $REF -c config.xml -l project.properties
          
      - name: Generate basic single report
        if: github.event.comment.body == 'single report'
