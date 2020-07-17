@@ -103,7 +103,7 @@ jobs:
        run: |
          mv config.xml ./contribution/checkstyle-tester/
          mv project.properties ./contribution/checkstyle-tester/
-         if [ -f patch_config.xml]; then
+         if [ -f patch_config.xml ]; then
           mv patch_config.xml ./contribution/checkstyle-tester/
           ls -la
          fi
@@ -123,7 +123,7 @@ jobs:
          bash
          REF="origin/${{needs.parse_body.outputs.branch}}"
          REPO="../../checkstyle"
-         if [ -f patch_config.xml]; then
+         if [ -f patch_config.xml ]; then
          ls -la
           groovy diff.groovy -r $REPO -b master -p $REF -bc config.xml -pc patch_config.xml -l project.properties
          else
