@@ -144,12 +144,12 @@ jobs:
           
       
       - name: Success message
-        if: success()
+        if: needs.make_report.outputs.message != ''
         run: echo "${{needs.make_report.outputs.message}}" > message
       
       #in link change repo owner
       - name: Failure message
-        if: failure()
+        if: needs.make_report.outputs.message == ''
         run: |
          bash
          JOBS_LINK="https://github.com/jack1515/checkstyle/actions/runs/${{github.run_id}}"
