@@ -147,7 +147,7 @@ jobs:
         run: |
          if [ -z  "${{needs.make_report.outputs.message}}" ]; then
           JOBS_LINK="https://github.com/jack1515/checkstyle/actions/runs/${{github.run_id}}"
-          API_LINK="https://api.github.com/repos/jack1515/checkstyle/actions/runs/ \
+          API_LINK="https://api.github.com/repos/jack1515/checkstyle/actions/runs/\
           ${{github.run_id}}/jobs"
           wget $API_LINK -O info.json
           jq '.jobs' info.json > jobs
