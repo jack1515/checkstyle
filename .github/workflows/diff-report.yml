@@ -131,7 +131,6 @@ jobs:
         echo $LINK/$FOLDER/reports/diff/index.html > message
         
      - name: Set output
-       if: always()
        id: out
        run: echo ::set-output name=message::$(cat message)   
   
