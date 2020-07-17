@@ -73,7 +73,9 @@ jobs:
         wget -q "${{needs.parse_body.outputs.project_link}}" -O project.properties
         wget -q "${{needs.parse_body.outputs.config_link}}" -O config.xml
         if [ ! -z  "${{needs.parse_body.outputs.patch_config}}" ]; then
+         echo "${{needs.parse_body.outputs.patch_config}}"
          wget -q "${{needs.parse_body.outputs.patch_config}}" -O patch_config.xml
+         ls -la
         fi
         
      # fetch-depth - number of commits to fetch.
@@ -103,6 +105,7 @@ jobs:
          mv project.properties ./contribution/checkstyle-tester/
          if [ -f patch_config.xml]; then
           mv patch_config.xml ./contribution/checkstyle-tester/
+          ls -la
          fi
          sudo apt install groovy
          
@@ -121,6 +124,7 @@ jobs:
          REF="origin/${{needs.parse_body.outputs.branch}}"
          REPO="../../checkstyle"
          if [ -f patch_config.xml]; then
+         ls -la
           groovy diff.groovy -r $REPO -b master -p $REF -bc config.xml -pc patch_config.xml -l project.properties
          else
           groovy diff.groovy -r $REPO -b master -p $REF -c config.xml -l project.properties
