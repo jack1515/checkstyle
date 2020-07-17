@@ -151,7 +151,7 @@ jobs:
         if: needs.make_report.outputs.message == ''
         run: |
          bash
-         JOBS_LINK = "https://github.com/jack1515/checkstyle/actions/runs/${{github.run_id}}"
+         JOBS_LINK="https://github.com/jack1515/checkstyle/actions/runs/${{github.run_id}}"
          wget -q $JOBS_LINK/jobs -O info.json
          jq '.jobs' info.json > jobs
          jq '.[] | select(.conclusion == "failure") | .name' jobs > job_name
