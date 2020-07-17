@@ -150,14 +150,13 @@ jobs:
       - name: Failure message
         if: needs.make_report.outputs.message == ''
         run: |
-         bash
-         JOBS_LINK="https://github.com/jack1515/checkstyle/actions/runs/${{github.run_id}}"
-         wget -q $JOBS_LINK/jobs -O info.json
+         echo "https://github.com/jack1515/checkstyle/actions/runs/${{github.run_id}}" > link
+         wget -q $(cat link)/jobs -O info.json
          jq '.jobs' info.json > jobs
          jq '.[] | select(.conclusion == "failure") | .name' jobs > job_name
          jq '.[] | select(.conclusion == "failure") | .steps' jobs > steps
          jq '.[] | select(.conclusion == "failure") | .name' steps > step_name
-         echo "Report generation job failed on phase $(cat job_name), step $(cat step_name).<br>Link: $JOBS_LINK" > message
+         echo "Report generation job failed on phase $(cat job_name), step $(cat step_name).<br>Link: $(cat link)" > message
      
       - name: Set message
         id: out
