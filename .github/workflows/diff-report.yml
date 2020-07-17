@@ -155,7 +155,9 @@ jobs:
      
       - name: Set message
         id: out
-        run: echo ::set-output name=message::$(cat message)
+        run: |
+         cat message
+         echo ::set-output name=message::$(cat message)
      
       - name: Check contribution existence
         id: check
